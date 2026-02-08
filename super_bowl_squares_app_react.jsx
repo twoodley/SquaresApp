@@ -41,19 +41,19 @@ function App() {
   const [first, setFirst] = useState("");
   const [last, setLast] = useState("");
   const [qty, setQty] = useState(1);
-  const [buyers, setBuyers] = useState([]); // {id, first, last, qty, initials}
+  const [buyers, setBuyers] = useState([]); 
   const [error, setError] = useState("");
 
   // Squares assignment
   const [assigned, setAssigned] = useState(false);
-  const [gridOwners, setGridOwners] = useState(emptyGrid()); // stores buyerId
+  const [gridOwners, setGridOwners] = useState(emptyGrid());
 
   // Teams + numbers assignment
   const [teamsAssigned, setTeamsAssigned] = useState(false);
   const [rowTeam, setRowTeam] = useState(null);
   const [colTeam, setColTeam] = useState(null);
-  const [rowDigits, setRowDigits] = useState([]); // perm of 0-9
-  const [colDigits, setColDigits] = useState([]); // perm of 0-9
+  const [rowDigits, setRowDigits] = useState([]); 
+  const [colDigits, setColDigits] = useState([]); 
 
   // Quarter scores + winners
   const [scores, setScores] = useState({
@@ -65,7 +65,7 @@ function App() {
 
   const soldSquares = useMemo(() => buyers.reduce((s, b) => s + Number(b.qty || 0), 0), [buyers]);
   const remaining = MAX_SQUARES - soldSquares;
-  const totalCollected = soldSquares; // $1 per square
+  const totalCollected = soldSquares; 
 
   const buyerById = useMemo(() => {
     const m = new Map();
@@ -217,7 +217,7 @@ function App() {
             <button
               onClick={resetAll}
               className="px-4 py-2 rounded-2xl bg-white shadow-sm border hover:bg-slate-50"
-              title="Start over (clears buyers, squares, and scores)"
+              title="Start over"
             >
               Reset
             </button>
@@ -390,7 +390,7 @@ function App() {
               </div>
             </div>
 
-            {/* Results/Summary Section */}
+            {/* Admin and Summary Section */}
             <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="bg-slate-50 rounded-2xl border p-4">
                 <h3 className="font-bold text-sm uppercase tracking-wider text-slate-500 mb-4">Quarter Scoring (Admin)</h3>
