@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+const { useState, useMemo } = React;
 
 // Super Bowl Squares: Patriots vs Seahawks
 // - Buyers enter first/last name + quantity (max total 100)
@@ -36,7 +36,7 @@ function emptyGrid() {
   return Array.from({ length: GRID_SIZE }, () => Array.from({ length: GRID_SIZE }, () => null));
 }
 
-export default function App() {
+function App() {
   // Purchases
   const [first, setFirst] = useState("");
   const [last, setLast] = useState("");
@@ -542,4 +542,5 @@ export default function App() {
     </div>
   );
 }
-const root = ReactDOM.createRoot(document.getElementById('root')); root.render(<SquaresApp />);
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<App />);
