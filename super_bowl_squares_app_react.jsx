@@ -38,7 +38,7 @@ function emptyGrid() {
 
 function App() {
   // THE RELIABLE BRIDGE: Check both possible library names
-  const QRCodeCanvas = (window.qrcode && window.qrcode.QRCodeCanvas) || (window.QRCode && window.QRCode.QRCodeCanvas);
+
 
   // Purchases
   const [first, setFirst] = useState("");
