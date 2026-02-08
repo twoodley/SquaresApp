@@ -37,9 +37,6 @@ function emptyGrid() {
 }
 
 function App() {
-  // THE RELIABLE BRIDGE: Check both possible library names
-
-
   // Purchases
   const [first, setFirst] = useState("");
   const [last, setLast] = useState("");
@@ -228,12 +225,12 @@ function App() {
         </header>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Sales Card */}
+          {/* Purchase Controls */}
           <div className="bg-white rounded-2xl shadow-sm border p-5">
             <div className="flex items-start justify-between gap-4">
               <div>
                 <h2 className="text-lg font-semibold">Buy Squares</h2>
-                <p className="text-slate-600 text-sm">Enter your name and quantity.</p>
+                <p className="text-slate-600 text-sm">Enter name and quantity.</p>
               </div>
               <div className="text-right">
                 <div className="text-slate-500 text-sm">Remaining</div>
@@ -254,22 +251,60 @@ function App() {
 
             <form onSubmit={addBuyer} className="mt-4 space-y-3">
               <div className="grid grid-cols-2 gap-3">
-                <input value={first} onChange={(e) => setFirst(e.target.value)} disabled={!canBuy} className="w-full px-3 py-2 rounded-xl border bg-white disabled:bg-slate-100" placeholder="First" />
-                <input value={last} onChange={(e) => setLast(e.target.value)} disabled={!canBuy} className="w-full px-3 py-2 rounded-xl border bg-white disabled:bg-slate-100" placeholder="Last" />
+                <input
+                  value={first}
+                  onChange={(e) => setFirst(e.target.value)}
+                  disabled={!canBuy}
+                  className="w-full px-3 py-2 rounded-xl border bg-white disabled:bg-slate-100"
+                  placeholder="First"
+                />
+                <input
+                  value={last}
+                  onChange={(e) => setLast(e.target.value)}
+                  disabled={!canBuy}
+                  className="w-full px-3 py-2 rounded-xl border bg-white disabled:bg-slate-100"
+                  placeholder="Last"
+                />
               </div>
               <div className="flex gap-3 items-end">
                 <div className="flex-1">
                   <label className="text-xs text-slate-500 ml-1 mb-1 block">Quantity</label>
-                  <input type="number" min={1} max={Math.max(1, remaining)} value={qty} onChange={(e) => setQty(e.target.value === "" ? "" : Number(e.target.value))} disabled={!canBuy} className="w-full px-3 py-2 rounded-xl border bg-white disabled:bg-slate-100" />
+                  <input
+                    type="number"
+                    min={1}
+                    max={Math.max(1, remaining)}
+                    value={qty}
+                    onChange={(e) => setQty(e.target.value === "" ? "" : Number(e.target.value))}
+                    disabled={!canBuy}
+                    className="w-full px-3 py-2 rounded-xl border bg-white disabled:bg-slate-100"
+                  />
                 </div>
-                <button type="submit" disabled={!canBuy} className="px-6 py-2 rounded-xl bg-slate-900 text-white shadow-sm disabled:opacity-40 font-semibold">Add</button>
+                <button
+                  type="submit"
+                  disabled={!canBuy}
+                  className="px-6 py-2 rounded-xl bg-slate-900 text-white shadow-sm disabled:opacity-40 font-semibold"
+                >
+                  Add
+                </button>
               </div>
               {error ? <div className="text-xs text-red-600 text-center font-medium">{error}</div> : null}
             </form>
 
             <div className="mt-6 space-y-2">
-              <button onClick={assignSquaresRandomly} disabled={!canAssignSquares} className="w-full px-4 py-2.5 rounded-xl bg-emerald-600 text-white shadow-sm disabled:opacity-40 font-bold text-sm">1) Admin: Assign Squares</button>
-              <button onClick={assignTeamsAndNumbers} disabled={!canAssignTeams} className="w-full px-4 py-2.5 rounded-xl bg-indigo-600 text-white shadow-sm disabled:opacity-40 font-bold text-sm">2) Admin: Assign Teams</button>
+              <button
+                onClick={assignSquaresRandomly}
+                disabled={!canAssignSquares}
+                className="w-full px-4 py-2.5 rounded-xl bg-emerald-600 text-white shadow-sm disabled:opacity-40 font-bold text-sm"
+              >
+                1) Admin: Assign Squares
+              </button>
+              <button
+                onClick={assignTeamsAndNumbers}
+                disabled={!canAssignTeams}
+                className="w-full px-4 py-2.5 rounded-xl bg-indigo-600 text-white shadow-sm disabled:opacity-40 font-bold text-sm"
+              >
+                2) Admin: Assign Teams
+              </button>
             </div>
 
             <div className="mt-6 border-t pt-4">
@@ -277,24 +312,43 @@ function App() {
               <div className="max-h-56 overflow-auto rounded-xl border">
                 <table className="w-full text-xs">
                   <thead className="bg-slate-50 text-slate-500 border-b">
-                    <tr><th className="text-left p-2">Name</th><th className="text-center p-2">Qty</th><th className="text-right p-2">Grid</th></tr>
+                    <tr>
+                      <th className="text-left p-2">Name</th>
+                      <th className="text-center p-2">Qty</th>
+                      <th className="text-right p-2">Grid</th>
+                    </tr>
                   </thead>
                   <tbody>
-                    {buyers.length === 0 ? <tr><td colSpan="3" className="p-4 text-center text-slate-400">No sales yet</td></tr> : 
-                    buyers.map((b) => (<tr key={b.id} className="border-b last:border-0"><td className="p-2 font-medium">{b.first} {b.last}</td><td className="p-2 text-center">{b.qty}</td><td className="p-2 text-right font-bold">{b.initials}</td></tr>))}
+                    {buyers.length === 0 ? (
+                      <tr><td colSpan="3" className="p-4 text-center text-slate-400">No sales yet</td></tr>
+                    ) : (
+                      buyers.map((b) => (
+                        <tr key={b.id} className="border-b last:border-0">
+                          <td className="p-2 font-medium">{b.first} {b.last}</td>
+                          <td className="p-2 text-center">{b.qty}</td>
+                          <td className="p-2 text-right font-bold">{b.initials}</td>
+                        </tr>
+                      ))
+                    )}
                   </tbody>
                 </table>
               </div>
             </div>
           </div>
 
-          {/* Grid Card */}
+          {/* Grid Section */}
           <div className="lg:col-span-2 bg-white rounded-2xl shadow-sm border p-5">
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-lg font-semibold">Squares Board</h2>
               <div className="flex gap-4 text-xs">
-                <div className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-slate-200"></span><span className="text-slate-500 font-medium">Rows: {teamsAssigned ? rowTeam : "???"}</span></div>
-                <div className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-slate-200"></span><span className="text-slate-500 font-medium">Cols: {teamsAssigned ? colTeam : "???"}</span></div>
+                <div className="flex items-center gap-1">
+                  <span className="w-2 h-2 rounded-full bg-slate-200"></span>
+                  <span className="text-slate-500 font-medium">Rows: {teamsAssigned ? rowTeam : "???"}</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <span className="w-2 h-2 rounded-full bg-slate-200"></span>
+                  <span className="text-slate-500 font-medium">Cols: {teamsAssigned ? colTeam : "???"}</span>
+                </div>
               </div>
             </div>
 
@@ -303,23 +357,41 @@ function App() {
                 <div className="flex">
                   <div className="w-10 h-10 md:w-12 md:h-12" />
                   {Array.from({ length: 10 }).map((_, c) => (
-                    <div key={`top-${c}`} className="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center m-0.5 rounded-lg border bg-white shadow-sm font-bold text-indigo-600">{teamsAssigned ? colDigits[c] : "?"}</div>
+                    <div
+                      key={`top-${c}`}
+                      className="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center m-0.5 rounded-lg border bg-white shadow-sm font-bold text-indigo-600"
+                    >
+                      {teamsAssigned ? colDigits[c] : "?"}
+                    </div>
                   ))}
                 </div>
                 {Array.from({ length: 10 }).map((_, r) => (
                   <div key={`row-${r}`} className="flex">
-                    <div className="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center m-0.5 rounded-lg border bg-white shadow-sm font-bold text-emerald-600">{teamsAssigned ? rowDigits[r] : "?"}</div>
+                    <div
+                      className="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center m-0.5 rounded-lg border bg-white shadow-sm font-bold text-emerald-600"
+                    >
+                      {teamsAssigned ? rowDigits[r] : "?"}
+                    </div>
                     {Array.from({ length: 10 }).map((_, c) => {
                       const owner = gridOwners?.[r]?.[c] ? buyerById.get(gridOwners[r][c]) : null;
-                      return <div key={`cell-${r}-${c}`} className={`w-10 h-10 md:w-12 md:h-12 flex items-center justify-center m-0.5 rounded-lg border font-bold text-xs shadow-sm transition-all ${owner ? "bg-white text-slate-800 border-slate-200" : "bg-slate-100/50 text-slate-300 border-transparent"}`}>{owner ? owner.initials : ""}</div>;
+                      return (
+                        <div
+                          key={`cell-${r}-${c}`}
+                          className={`w-10 h-10 md:w-12 md:h-12 flex items-center justify-center m-0.5 rounded-lg border font-bold text-xs shadow-sm transition-all ${
+                            owner ? "bg-white text-slate-800 border-slate-200" : "bg-slate-100/50 text-slate-300 border-transparent"
+                          }`}
+                        >
+                          {owner ? owner.initials : ""}
+                        </div>
+                      );
                     })}
                   </div>
                 ))}
               </div>
             </div>
 
+            {/* Results/Summary Section */}
             <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Scoring Box */}
               <div className="bg-slate-50 rounded-2xl border p-4">
                 <h3 className="font-bold text-sm uppercase tracking-wider text-slate-500 mb-4">Quarter Scoring (Admin)</h3>
                 <div className="space-y-3">
@@ -327,15 +399,30 @@ function App() {
                     <div key={q} className="bg-white rounded-xl border p-3 shadow-sm">
                       <div className="text-xs font-bold text-slate-400 mb-2">{q} Final Scores</div>
                       <div className="grid grid-cols-2 gap-3">
-                        <div><label className="text-[10px] font-bold text-slate-400 ml-1">PATRIOTS</label><input value={scores[q].Patriots} onChange={(e) => setQuarterScore(q, "Patriots", e.target.value)} className="w-full px-2 py-1 rounded-lg border text-sm font-bold" placeholder="0" /></div>
-                        <div><label className="text-[10px] font-bold text-slate-400 ml-1">SEAHAWKS</label><input value={scores[q].Seahawks} onChange={(e) => setQuarterScore(q, "Seahawks", e.target.value)} className="w-full px-2 py-1 rounded-lg border text-sm font-bold" placeholder="0" /></div>
+                        <div>
+                          <label className="text-[10px] font-bold text-slate-400 ml-1">PATRIOTS</label>
+                          <input
+                            value={scores[q].Patriots}
+                            onChange={(e) => setQuarterScore(q, "Patriots", e.target.value)}
+                            className="w-full px-2 py-1 rounded-lg border text-sm font-bold"
+                            placeholder="0"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-[10px] font-bold text-slate-400 ml-1">SEAHAWKS</label>
+                          <input
+                            value={scores[q].Seahawks}
+                            onChange={(e) => setQuarterScore(q, "Seahawks", e.target.value)}
+                            className="w-full px-2 py-1 rounded-lg border text-sm font-bold"
+                            placeholder="0"
+                          />
+                        </div>
                       </div>
                     </div>
                   ))}
                 </div>
               </div>
 
-              {/* Summary Box */}
               <div className="bg-slate-50 rounded-2xl border p-4">
                 <div className="flex justify-between items-center mb-4">
                   <h3 className="font-bold text-sm uppercase tracking-wider text-slate-500">Winners Summary</h3>
@@ -346,14 +433,20 @@ function App() {
                     const w = winners[i];
                     return (
                       <div key={q} className="bg-white rounded-xl border p-3 shadow-sm flex justify-between items-center">
-                        <div><div className="text-[10px] font-bold text-slate-400 uppercase">{q} Winner</div><div className="text-sm font-bold">{w ? `${w.buyer.first} ${w.buyer.last}` : "Pending..."}</div></div>
-                        <div className="text-right">{w && <div className="text-xs font-bold text-indigo-600 bg-indigo-50 px-2 py-1 rounded-md">{w.rowDigit} - {w.colDigit}</div>}</div>
+                        <div>
+                          <div className="text-[10px] font-bold text-slate-400 uppercase">{q} Winner</div>
+                          <div className="text-sm font-bold">{w ? `${w.buyer.first} ${w.buyer.last}` : "Pending..."}</div>
+                        </div>
+                        <div className="text-right">
+                          {w && (
+                            <div className="text-xs font-bold text-indigo-600 bg-indigo-50 px-2 py-1 rounded-md">
+                              {w.rowDigit} - {w.colDigit}
+                            </div>
+                          )}
+                        </div>
                       </div>
                     );
                   })}
-                  
-                 
-                  </div>
                 </div>
               </div>
             </div>
