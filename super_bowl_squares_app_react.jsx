@@ -1,4 +1,5 @@
 const { useState, useMemo } = React;
+const QRCodeCanvas = window.QRCode ? window.QRCode.QRCodeCanvas : null;
 
 // Super Bowl Squares: Patriots vs Seahawks
 // - Buyers enter first/last name + quantity (max total 100)
@@ -37,9 +38,6 @@ function emptyGrid() {
 }
 
 function App() {
-  // We check if the library exists, otherwise we use a placeholder to prevent crashes
-  const QRCodeCanvas = window.qrcode ? window.qrcode.QRCodeCanvas : null;
-
   // Purchases
   const [first, setFirst] = useState("");
   const [last, setLast] = useState("");
@@ -228,7 +226,6 @@ function App() {
         </header>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Sales */}
           <div className="bg-white rounded-2xl shadow-sm border p-5">
             <div className="flex items-start justify-between gap-4">
               <div>
@@ -288,9 +285,7 @@ function App() {
                     disabled={!canBuy}
                     className="mt-1 w-full px-3 py-2 rounded-xl border bg-white disabled:bg-slate-100"
                   />
-                  <div className="text-xs text-slate-500 mt-1">Max you can buy now: {remaining}</div>
                 </div>
-
                 <button
                   type="submit"
                   disabled={!canBuy}
@@ -299,7 +294,6 @@ function App() {
                   Add Purchase
                 </button>
               </div>
-
               {error ? <div className="text-sm text-red-600">{error}</div> : null}
             </form>
 
@@ -311,7 +305,6 @@ function App() {
               >
                 1) Admin: Randomly Assign Squares
               </button>
-
               <button
                 onClick={assignTeamsAndNumbers}
                 disabled={!canAssignTeams}
@@ -350,63 +343,40 @@ function App() {
             </div>
           </div>
 
-          {/* Board */}
           <div className="lg:col-span-2 bg-white rounded-2xl shadow-sm border p-5">
             <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
               <div>
                 <h2 className="text-lg font-semibold">Squares Board</h2>
                 <p className="text-slate-600 text-sm">
-                  {assigned
-                    ? teamsAssigned
-                      ? "Teams and numbers assigned. Ready for scoring."
-                      : "Squares assigned. Next: assign teams + numbers."
-                    : "Board will fill after 100 squares are sold and assigned."}
+                  {assigned ? (teamsAssigned ? "Teams assigned. Ready for scoring." : "Squares assigned.") : "Board will fill after 100 sold."}
                 </p>
               </div>
-
               <div className="flex flex-col gap-1 text-sm">
-                <div className="flex items-center gap-2">
-                  <span className="text-slate-500">Columns (Top):</span>
-                  <span className="font-semibold">{teamsAssigned ? colTeam : "—"}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-slate-500">Rows (Left):</span>
-                  <span className="font-semibold">{teamsAssigned ? rowTeam : "—"}</span>
-                </div>
+                <div><span className="text-slate-500">Columns (Top):</span> <span className="font-semibold">{teamsAssigned ? colTeam : "—"}</span></div>
+                <div><span className="text-slate-500">Rows (Left):</span> <span className="font-semibold">{teamsAssigned ? rowTeam : "—"}</span></div>
               </div>
             </div>
 
             <div className="mt-4 overflow-auto">
               <div className="inline-block">
-                {/* Top header */}
                 <div className="flex">
                   <div className="w-12 h-12" />
                   {Array.from({ length: GRID_SIZE }).map((_, c) => (
-                    <div
-                      key={`top-${c}`}
-                      className="w-12 h-12 flex items-center justify-center rounded-xl border bg-slate-50 font-semibold tabular-nums"
-                    >
+                    <div key={`top-${c}`} className="w-12 h-12 flex items-center justify-center rounded-xl border bg-slate-50 font-semibold tabular-nums">
                       {teamsAssigned ? colDigits[c] : ""}
                     </div>
                   ))}
                 </div>
-
-                {/* Rows */}
                 {Array.from({ length: GRID_SIZE }).map((_, r) => (
                   <div key={`row-${r}`} className="flex">
-                    <div
-                      className="w-12 h-12 flex items-center justify-center rounded-xl border bg-slate-50 font-semibold tabular-nums"
-                    >
+                    <div className="w-12 h-12 flex items-center justify-center rounded-xl border bg-slate-50 font-semibold tabular-nums">
                       {teamsAssigned ? rowDigits[r] : ""}
                     </div>
                     {Array.from({ length: GRID_SIZE }).map((_, c) => {
                       const ownerId = gridOwners?.[r]?.[c];
                       const owner = ownerId ? buyerById.get(ownerId) : null;
                       return (
-                        <div
-                          key={`cell-${r}-${c}`}
-                          className="w-12 h-12 flex items-center justify-center rounded-xl border font-semibold"
-                        >
+                        <div key={`cell-${r}-${c}`} className="w-12 h-12 flex items-center justify-center rounded-xl border font-semibold">
                           {owner ? owner.initials : ""}
                         </div>
                       );
@@ -416,7 +386,6 @@ function App() {
               </div>
             </div>
 
-            {/* Scoring */}
             <div className="mt-6 grid grid-cols-1 xl:grid-cols-2 gap-6">
               <div className="bg-slate-50 rounded-2xl border p-4">
                 <h3 className="font-semibold">Quarter Scoring (Admin)</h3>
@@ -427,21 +396,11 @@ function App() {
                       <div className="mt-2 grid grid-cols-2 gap-3">
                         <div>
                           <label className="text-xs text-slate-600">Patriots</label>
-                          <input
-                            value={scores[q].Patriots}
-                            onChange={(e) => setQuarterScore(q, "Patriots", e.target.value)}
-                            className="mt-1 w-full px-3 py-2 rounded-xl border bg-white"
-                            placeholder="e.g., 14"
-                          />
+                          <input value={scores[q].Patriots} onChange={(e) => setQuarterScore(q, "Patriots", e.target.value)} className="mt-1 w-full px-3 py-2 rounded-xl border bg-white" placeholder="e.g., 14" />
                         </div>
                         <div>
                           <label className="text-xs text-slate-600">Seahawks</label>
-                          <input
-                            value={scores[q].Seahawks}
-                            onChange={(e) => setQuarterScore(q, "Seahawks", e.target.value)}
-                            className="mt-1 w-full px-3 py-2 rounded-xl border bg-white"
-                            placeholder="e.g., 17"
-                          />
+                          <input value={scores[q].Seahawks} onChange={(e) => setQuarterScore(q, "Seahawks", e.target.value)} className="mt-1 w-full px-3 py-2 rounded-xl border bg-white" placeholder="e.g., 17" />
                         </div>
                       </div>
                     </div>
@@ -466,24 +425,18 @@ function App() {
                           </div>
                         </div>
                         <div className="text-right">
-                          <div className="text-sm font-semibold">
-                            {w ? `${w.buyer.first} ${w.buyer.last}` : "—"}
-                          </div>
+                          <div className="text-sm font-semibold">{w ? `${w.buyer.first} ${w.buyer.last}` : "—"}</div>
                         </div>
                       </div>
                     );
                   })}
-
-                  {/* QR Code at the bottom of Summary */}
+                  
+                  {/* QR SECTION */}
                   <div className="mt-6 flex flex-col items-center border-t pt-6">
                     <p className="text-xs font-semibold text-slate-500 mb-2 uppercase tracking-wider">Scan for Live Board 📱</p>
                     <div className="bg-white p-2 rounded-xl shadow-sm border">
                       {QRCodeCanvas ? (
-                        <QRCodeCanvas 
-                          value="https://twoodley.github.io/SquaresApp/" 
-                          size={128}
-                          level={"H"} 
-                        />
+                        <QRCodeCanvas value="https://twoodley.github.io/SquaresApp/" size={128} level={"H"} />
                       ) : (
                         <p className="text-xs text-red-500 italic">Connecting to QR library...</p>
                       )}
@@ -499,9 +452,5 @@ function App() {
   );
 }
 
-// Ensure we only declare the root once at the very end
-const rootElement = document.getElementById('root');
-if (rootElement) {
-  const root = ReactDOM.createRoot(rootElement);
-  root.render(<App />);
-}
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<App />);
