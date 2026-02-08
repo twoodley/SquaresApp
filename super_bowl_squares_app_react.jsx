@@ -352,16 +352,7 @@ function App() {
                     );
                   })}
                   
-                  {/* QR Code */}
-                  <div className="mt-6 flex flex-col items-center border-t border-slate-200 pt-6">
-                    <p className="text-[10px] font-black text-slate-400 mb-3 uppercase tracking-widest">Scan for Live Board 📱</p>
-                    <div className="bg-white p-3 rounded-2xl shadow-xl border border-slate-100 ring-4 ring-slate-50">
-                      {QRCodeCanvas ? (
-                        <QRCodeCanvas value="https://twoodley.github.io/SquaresApp/" size={120} level={"H"} />
-                      ) : (
-                        <div className="w-[120px] h-[120px] flex items-center justify-center bg-slate-50 rounded-lg"><p className="text-[10px] text-slate-400 animate-pulse font-bold">Connecting...</p></div>
-                      )}
-                    </div>
+                 
                   </div>
                 </div>
               </div>
