@@ -1,5 +1,4 @@
 const { useState, useMemo } = React;
-const QRCodeCanvas = window.QRCode ? window.QRCode.QRCodeCanvas : null;
 
 // Super Bowl Squares: Patriots vs Seahawks
 // - Buyers enter first/last name + quantity (max total 100)
@@ -38,6 +37,9 @@ function emptyGrid() {
 }
 
 function App() {
+  // THE RELIABLE BRIDGE: Check both possible library names
+  const QRCodeCanvas = (window.qrcode && window.qrcode.QRCodeCanvas) || (window.QRCode && window.QRCode.QRCodeCanvas);
+
   // Purchases
   const [first, setFirst] = useState("");
   const [last, setLast] = useState("");
@@ -226,11 +228,12 @@ function App() {
         </header>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Sales Card */}
           <div className="bg-white rounded-2xl shadow-sm border p-5">
             <div className="flex items-start justify-between gap-4">
               <div>
                 <h2 className="text-lg font-semibold">Buy Squares</h2>
-                <p className="text-slate-600 text-sm">Enter your name and how many squares you want.</p>
+                <p className="text-slate-600 text-sm">Enter your name and quantity.</p>
               </div>
               <div className="text-right">
                 <div className="text-slate-500 text-sm">Remaining</div>
@@ -239,206 +242,124 @@ function App() {
             </div>
 
             <div className="mt-4 grid grid-cols-2 gap-3">
-              <div className="bg-slate-50 rounded-2xl p-3 border">
-                <div className="text-slate-500 text-xs">Sold</div>
-                <div className="text-xl font-semibold tabular-nums">{soldSquares} / 100</div>
+              <div className="bg-slate-50 rounded-2xl p-3 border text-center">
+                <div className="text-slate-500 text-xs uppercase font-bold tracking-tight">Sold</div>
+                <div className="text-xl font-bold tabular-nums">{soldSquares} / 100</div>
               </div>
-              <div className="bg-slate-50 rounded-2xl p-3 border">
-                <div className="text-slate-500 text-xs">Collected</div>
-                <div className="text-xl font-semibold tabular-nums">${totalCollected}</div>
+              <div className="bg-slate-50 rounded-2xl p-3 border text-center">
+                <div className="text-slate-500 text-xs uppercase font-bold tracking-tight">Pot</div>
+                <div className="text-xl font-bold tabular-nums">${totalCollected}</div>
               </div>
             </div>
 
             <form onSubmit={addBuyer} className="mt-4 space-y-3">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <div>
-                  <label className="text-sm text-slate-600">First name</label>
-                  <input
-                    value={first}
-                    onChange={(e) => setFirst(e.target.value)}
-                    disabled={!canBuy}
-                    className="mt-1 w-full px-3 py-2 rounded-xl border bg-white disabled:bg-slate-100"
-                    placeholder="First"
-                  />
-                </div>
-                <div>
-                  <label className="text-sm text-slate-600">Last name</label>
-                  <input
-                    value={last}
-                    onChange={(e) => setLast(e.target.value)}
-                    disabled={!canBuy}
-                    className="mt-1 w-full px-3 py-2 rounded-xl border bg-white disabled:bg-slate-100"
-                    placeholder="Last"
-                  />
-                </div>
+              <div className="grid grid-cols-2 gap-3">
+                <input value={first} onChange={(e) => setFirst(e.target.value)} disabled={!canBuy} className="w-full px-3 py-2 rounded-xl border bg-white disabled:bg-slate-100" placeholder="First" />
+                <input value={last} onChange={(e) => setLast(e.target.value)} disabled={!canBuy} className="w-full px-3 py-2 rounded-xl border bg-white disabled:bg-slate-100" placeholder="Last" />
               </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 items-end">
-                <div>
-                  <label className="text-sm text-slate-600">Squares</label>
-                  <input
-                    type="number"
-                    min={1}
-                    max={Math.max(1, remaining)}
-                    value={qty}
-                    onChange={(e) => setQty(e.target.value === "" ? "" : Number(e.target.value))}
-                    disabled={!canBuy}
-                    className="mt-1 w-full px-3 py-2 rounded-xl border bg-white disabled:bg-slate-100"
-                  />
+              <div className="flex gap-3 items-end">
+                <div className="flex-1">
+                  <label className="text-xs text-slate-500 ml-1 mb-1 block">Quantity</label>
+                  <input type="number" min={1} max={Math.max(1, remaining)} value={qty} onChange={(e) => setQty(e.target.value === "" ? "" : Number(e.target.value))} disabled={!canBuy} className="w-full px-3 py-2 rounded-xl border bg-white disabled:bg-slate-100" />
                 </div>
-                <button
-                  type="submit"
-                  disabled={!canBuy}
-                  className="px-4 py-2 rounded-2xl bg-slate-900 text-white shadow-sm disabled:opacity-40"
-                >
-                  Add Purchase
-                </button>
+                <button type="submit" disabled={!canBuy} className="px-6 py-2 rounded-xl bg-slate-900 text-white shadow-sm disabled:opacity-40 font-semibold">Add</button>
               </div>
-              {error ? <div className="text-sm text-red-600">{error}</div> : null}
+              {error ? <div className="text-xs text-red-600 text-center font-medium">{error}</div> : null}
             </form>
 
-            <div className="mt-5 flex flex-col gap-2">
-              <button
-                onClick={assignSquaresRandomly}
-                disabled={!canAssignSquares}
-                className="px-4 py-2 rounded-2xl bg-emerald-600 text-white shadow-sm disabled:opacity-40"
-              >
-                1) Admin: Randomly Assign Squares
-              </button>
-              <button
-                onClick={assignTeamsAndNumbers}
-                disabled={!canAssignTeams}
-                className="px-4 py-2 rounded-2xl bg-indigo-600 text-white shadow-sm disabled:opacity-40"
-              >
-                2) Admin: Assign Teams + Random Numbers
-              </button>
+            <div className="mt-6 space-y-2">
+              <button onClick={assignSquaresRandomly} disabled={!canAssignSquares} className="w-full px-4 py-2.5 rounded-xl bg-emerald-600 text-white shadow-sm disabled:opacity-40 font-bold text-sm">1) Admin: Assign Squares</button>
+              <button onClick={assignTeamsAndNumbers} disabled={!canAssignTeams} className="w-full px-4 py-2.5 rounded-xl bg-indigo-600 text-white shadow-sm disabled:opacity-40 font-bold text-sm">2) Admin: Assign Teams</button>
             </div>
 
-            <div className="mt-5">
-              <h3 className="text-sm font-semibold text-slate-700">Purchases</h3>
-              <div className="mt-2 max-h-56 overflow-auto rounded-2xl border">
-                {buyers.length === 0 ? (
-                  <div className="p-3 text-sm text-slate-500">No purchases yet.</div>
-                ) : (
-                  <table className="w-full text-sm">
-                    <thead className="bg-slate-50 text-slate-600">
-                      <tr>
-                        <th className="text-left p-2">Name</th>
-                        <th className="text-right p-2">Squares</th>
-                        <th className="text-right p-2">Initials on grid</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {buyers.map((b) => (
-                        <tr key={b.id} className="border-t">
-                          <td className="p-2">{b.first} {b.last}</td>
-                          <td className="p-2 text-right tabular-nums">{b.qty}</td>
-                          <td className="p-2 text-right font-semibold">{b.initials}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                )}
+            <div className="mt-6 border-t pt-4">
+              <h3 className="text-xs font-bold text-slate-400 uppercase mb-2">Purchase History</h3>
+              <div className="max-h-56 overflow-auto rounded-xl border">
+                <table className="w-full text-xs">
+                  <thead className="bg-slate-50 text-slate-500 border-b">
+                    <tr><th className="text-left p-2">Name</th><th className="text-center p-2">Qty</th><th className="text-right p-2">Grid</th></tr>
+                  </thead>
+                  <tbody>
+                    {buyers.length === 0 ? <tr><td colSpan="3" className="p-4 text-center text-slate-400">No sales yet</td></tr> : 
+                    buyers.map((b) => (<tr key={b.id} className="border-b last:border-0"><td className="p-2 font-medium">{b.first} {b.last}</td><td className="p-2 text-center">{b.qty}</td><td className="p-2 text-right font-bold">{b.initials}</td></tr>))}
+                  </tbody>
+                </table>
               </div>
             </div>
           </div>
 
+          {/* Grid Card */}
           <div className="lg:col-span-2 bg-white rounded-2xl shadow-sm border p-5">
-            <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
-              <div>
-                <h2 className="text-lg font-semibold">Squares Board</h2>
-                <p className="text-slate-600 text-sm">
-                  {assigned ? (teamsAssigned ? "Teams assigned. Ready for scoring." : "Squares assigned.") : "Board will fill after 100 sold."}
-                </p>
-              </div>
-              <div className="flex flex-col gap-1 text-sm">
-                <div><span className="text-slate-500">Columns (Top):</span> <span className="font-semibold">{teamsAssigned ? colTeam : "—"}</span></div>
-                <div><span className="text-slate-500">Rows (Left):</span> <span className="font-semibold">{teamsAssigned ? rowTeam : "—"}</span></div>
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-lg font-semibold">Squares Board</h2>
+              <div className="flex gap-4 text-xs">
+                <div className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-slate-200"></span><span className="text-slate-500 font-medium">Rows: {teamsAssigned ? rowTeam : "???"}</span></div>
+                <div className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-slate-200"></span><span className="text-slate-500 font-medium">Cols: {teamsAssigned ? colTeam : "???"}</span></div>
               </div>
             </div>
 
-            <div className="mt-4 overflow-auto">
-              <div className="inline-block">
+            <div className="flex justify-center overflow-x-auto pb-4">
+              <div className="inline-block border-2 border-slate-100 p-2 rounded-3xl bg-slate-50/50">
                 <div className="flex">
-                  <div className="w-12 h-12" />
-                  {Array.from({ length: GRID_SIZE }).map((_, c) => (
-                    <div key={`top-${c}`} className="w-12 h-12 flex items-center justify-center rounded-xl border bg-slate-50 font-semibold tabular-nums">
-                      {teamsAssigned ? colDigits[c] : ""}
-                    </div>
+                  <div className="w-10 h-10 md:w-12 md:h-12" />
+                  {Array.from({ length: 10 }).map((_, c) => (
+                    <div key={`top-${c}`} className="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center m-0.5 rounded-lg border bg-white shadow-sm font-bold text-indigo-600">{teamsAssigned ? colDigits[c] : "?"}</div>
                   ))}
                 </div>
-                {Array.from({ length: GRID_SIZE }).map((_, r) => (
+                {Array.from({ length: 10 }).map((_, r) => (
                   <div key={`row-${r}`} className="flex">
-                    <div className="w-12 h-12 flex items-center justify-center rounded-xl border bg-slate-50 font-semibold tabular-nums">
-                      {teamsAssigned ? rowDigits[r] : ""}
-                    </div>
-                    {Array.from({ length: GRID_SIZE }).map((_, c) => {
-                      const ownerId = gridOwners?.[r]?.[c];
-                      const owner = ownerId ? buyerById.get(ownerId) : null;
-                      return (
-                        <div key={`cell-${r}-${c}`} className="w-12 h-12 flex items-center justify-center rounded-xl border font-semibold">
-                          {owner ? owner.initials : ""}
-                        </div>
-                      );
+                    <div className="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center m-0.5 rounded-lg border bg-white shadow-sm font-bold text-emerald-600">{teamsAssigned ? rowDigits[r] : "?"}</div>
+                    {Array.from({ length: 10 }).map((_, c) => {
+                      const owner = gridOwners?.[r]?.[c] ? buyerById.get(gridOwners[r][c]) : null;
+                      return <div key={`cell-${r}-${c}`} className={`w-10 h-10 md:w-12 md:h-12 flex items-center justify-center m-0.5 rounded-lg border font-bold text-xs shadow-sm transition-all ${owner ? "bg-white text-slate-800 border-slate-200" : "bg-slate-100/50 text-slate-300 border-transparent"}`}>{owner ? owner.initials : ""}</div>;
                     })}
                   </div>
                 ))}
               </div>
             </div>
 
-            <div className="mt-6 grid grid-cols-1 xl:grid-cols-2 gap-6">
+            <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Scoring Box */}
               <div className="bg-slate-50 rounded-2xl border p-4">
-                <h3 className="font-semibold">Quarter Scoring (Admin)</h3>
-                <div className="mt-4 space-y-4">
+                <h3 className="font-bold text-sm uppercase tracking-wider text-slate-500 mb-4">Quarter Scoring (Admin)</h3>
+                <div className="space-y-3">
                   {["Q1", "Q2", "Q3", "Q4"].map((q) => (
-                    <div key={q} className="bg-white rounded-2xl border p-3">
-                      <div className="font-semibold">{q}</div>
-                      <div className="mt-2 grid grid-cols-2 gap-3">
-                        <div>
-                          <label className="text-xs text-slate-600">Patriots</label>
-                          <input value={scores[q].Patriots} onChange={(e) => setQuarterScore(q, "Patriots", e.target.value)} className="mt-1 w-full px-3 py-2 rounded-xl border bg-white" placeholder="e.g., 14" />
-                        </div>
-                        <div>
-                          <label className="text-xs text-slate-600">Seahawks</label>
-                          <input value={scores[q].Seahawks} onChange={(e) => setQuarterScore(q, "Seahawks", e.target.value)} className="mt-1 w-full px-3 py-2 rounded-xl border bg-white" placeholder="e.g., 17" />
-                        </div>
+                    <div key={q} className="bg-white rounded-xl border p-3 shadow-sm">
+                      <div className="text-xs font-bold text-slate-400 mb-2">{q} Final Scores</div>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div><label className="text-[10px] font-bold text-slate-400 ml-1">PATRIOTS</label><input value={scores[q].Patriots} onChange={(e) => setQuarterScore(q, "Patriots", e.target.value)} className="w-full px-2 py-1 rounded-lg border text-sm font-bold" placeholder="0" /></div>
+                        <div><label className="text-[10px] font-bold text-slate-400 ml-1">SEAHAWKS</label><input value={scores[q].Seahawks} onChange={(e) => setQuarterScore(q, "Seahawks", e.target.value)} className="w-full px-2 py-1 rounded-lg border text-sm font-bold" placeholder="0" /></div>
                       </div>
                     </div>
                   ))}
                 </div>
               </div>
 
+              {/* Summary Box */}
               <div className="bg-slate-50 rounded-2xl border p-4">
                 <div className="flex justify-between items-center mb-4">
-                  <h3 className="font-semibold">Winners Summary</h3>
+                  <h3 className="font-bold text-sm uppercase tracking-wider text-slate-500">Winners Summary</h3>
                   <span className="text-xs font-bold text-emerald-600 italic">Good Luck Everyone! 🍀</span>
                 </div>
                 <div className="space-y-3">
                   {["Q1", "Q2", "Q3", "Q4"].map((q, i) => {
                     const w = winners[i];
                     return (
-                      <div key={`sum-${q}`} className="bg-white rounded-2xl border p-3 flex items-center justify-between">
-                        <div>
-                          <div className="font-semibold">{q}</div>
-                          <div className="text-xs text-slate-500">
-                            Pats: {scores[q].Patriots || "—"} • Hawks: {scores[q].Seahawks || "—"}
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <div className="text-sm font-semibold">{w ? `${w.buyer.first} ${w.buyer.last}` : "—"}</div>
-                        </div>
+                      <div key={q} className="bg-white rounded-xl border p-3 shadow-sm flex justify-between items-center">
+                        <div><div className="text-[10px] font-bold text-slate-400 uppercase">{q} Winner</div><div className="text-sm font-bold">{w ? `${w.buyer.first} ${w.buyer.last}` : "Pending..."}</div></div>
+                        <div className="text-right">{w && <div className="text-xs font-bold text-indigo-600 bg-indigo-50 px-2 py-1 rounded-md">{w.rowDigit} - {w.colDigit}</div>}</div>
                       </div>
                     );
                   })}
                   
-                  {/* QR SECTION */}
-                  <div className="mt-6 flex flex-col items-center border-t pt-6">
-                    <p className="text-xs font-semibold text-slate-500 mb-2 uppercase tracking-wider">Scan for Live Board 📱</p>
-                    <div className="bg-white p-2 rounded-xl shadow-sm border">
+                  {/* QR Code */}
+                  <div className="mt-6 flex flex-col items-center border-t border-slate-200 pt-6">
+                    <p className="text-[10px] font-black text-slate-400 mb-3 uppercase tracking-widest">Scan for Live Board 📱</p>
+                    <div className="bg-white p-3 rounded-2xl shadow-xl border border-slate-100 ring-4 ring-slate-50">
                       {QRCodeCanvas ? (
-                        <QRCodeCanvas value="https://twoodley.github.io/SquaresApp/" size={128} level={"H"} />
+                        <QRCodeCanvas value="https://twoodley.github.io/SquaresApp/" size={120} level={"H"} />
                       ) : (
-                        <p className="text-xs text-red-500 italic">Connecting to QR library...</p>
+                        <div className="w-[120px] h-[120px] flex items-center justify-center bg-slate-50 rounded-lg"><p className="text-[10px] text-slate-400 animate-pulse font-bold">Connecting...</p></div>
                       )}
                     </div>
                   </div>
