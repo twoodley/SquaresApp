@@ -451,6 +451,18 @@ function App() {
                         <div className="text-right">
                           <div className="text-sm font-semibold">{w ? `${w.buyer.first} ${w.buyer.last}` : "—"}</div>
                         </div>
+                        {/* --- PASTE QR CODE HERE --- */}
+                <div className="mt-6 flex flex-col items-center border-t pt-6">
+                  <p className="text-xs font-semibold text-slate-500 mb-2 uppercase tracking-wider">Scan for Live Board 📱</p>
+                  <div className="bg-white p-2 rounded-xl shadow-sm border">
+                    <QRCodeCanvas 
+                      value="https://twoodley.github.io/SquaresApp/" 
+                      size={128}
+                      level={"H"} 
+                    />
+                  </div>
+                </div>
+                {/* -------------------------- */}
                       </div>
                     );
                   })}
