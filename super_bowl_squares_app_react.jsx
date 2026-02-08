@@ -1,4 +1,5 @@
 const { useState, useMemo } = React;
+const { QRCodeCanvas } = qrcode;
 
 // Super Bowl Squares: Patriots vs Seahawks
 // - Buyers enter first/last name + quantity (max total 100)
