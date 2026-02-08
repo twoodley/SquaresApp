@@ -1,5 +1,7 @@
 const { useState, useMemo } = React;
-const { QRCodeCanvas } = qrcode;
+
+// This line pulls the QR tool safely from the library we added to index.html
+const QRCodeCanvas = window.QRCodeCanvas;
 
 // Super Bowl Squares: Patriots vs Seahawks
 const TEAMS = ["New England Patriots", "Seattle Seahawks"];
@@ -142,11 +144,10 @@ function App() {
             <h1 className="text-2xl md:text-3xl font-semibold">Super Bowl Squares</h1>
             <p className="text-slate-600">Patriots vs Seahawks • $1 per square</p>
           </div>
-          <button onClick={resetAll} className="px-4 py-2 rounded-2xl bg-white border">Reset</button>
+          <button onClick={resetAll} className="px-4 py-2 rounded-2xl bg-white border shadow-sm">Reset</button>
         </header>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Buying Section */}
           <div className="bg-white rounded-2xl shadow-sm border p-5">
             <h2 className="text-lg font-semibold">Buy Squares ({remaining} left)</h2>
             <form onSubmit={addBuyer} className="mt-4 space-y-3">
@@ -161,7 +162,6 @@ function App() {
             </div>
           </div>
 
-          {/* Grid Board */}
           <div className="lg:col-span-2 bg-white rounded-2xl shadow-sm border p-5 overflow-auto">
             <div className="inline-block">
               <div className="flex">
@@ -183,7 +183,6 @@ function App() {
           </div>
         </div>
 
-        {/* Scoring and Winners Summary */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="bg-slate-50 rounded-2xl border p-4">
             <h3 className="font-semibold mb-4">Quarter Scoring</h3>
@@ -199,7 +198,11 @@ function App() {
           </div>
 
           <div className="bg-slate-50 rounded-2xl border p-4">
-            <h3 className="font-semibold mb-4">Winners Summary</h3>
+            <div className="flex justify-between items-center mb-4">
+               <h3 className="font-semibold">Winners Summary</h3>
+               <span className="text-xs font-bold text-emerald-600 italic">Good Luck Everyone! 🍀</span>
+            </div>
+            
             <div className="space-y-3">
               {["Q1", "Q2", "Q3", "Q4"].map((q, i) => {
                 const w = winners[i];
@@ -211,15 +214,19 @@ function App() {
                 );
               })}
               
-              {/* --- QR CODE OUTSIDE THE LOOP --- */}
               <div className="mt-6 flex flex-col items-center border-t pt-6">
                 <p className="text-xs font-semibold text-slate-500 mb-2 uppercase tracking-wider">Scan for Live Board 📱</p>
                 <div className="bg-white p-2 rounded-xl shadow-sm border">
-                  <QRCodeCanvas 
-                    value="https://twoodley.github.io/SquaresApp/" 
-                    size={128}
-                    level={"H"} 
-                  />
+                  {/* Using the component only if the library loaded correctly */}
+                  {QRCodeCanvas ? (
+                    <QRCodeCanvas 
+                      value="https://twoodley.github.io/SquaresApp/" 
+                      size={128}
+                      level={"H"} 
+                    />
+                  ) : (
+                    <p className="text-xs text-red-500">QR Library Loading...</p>
+                  )}
                 </div>
               </div>
             </div>
@@ -230,5 +237,6 @@ function App() {
   );
 }
 
+// THE ON SWITCH - Declared only once here
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(<App />);
